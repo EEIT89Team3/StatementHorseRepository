@@ -1,7 +1,6 @@
 ﻿package com.member.model;
 
 import java.util.List;
-import java.util.Set;
 
 /*
  Hibernate is providing a factory.getCurrentSession() method for retrieving the current session. A
@@ -21,13 +20,9 @@ import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.listingdetails.model.ListingDetailsVO;
 import com.message.model.MsgVO;
 import com.tracklisting.model.TrackListingVO;
-
-import hibernate.util.HibernateUtil;
-
-
+import com.utils.HibernateUtil;
 
 public class MemberHibernateDAO implements MemberDAOInterface {
 
@@ -121,25 +116,8 @@ public class MemberHibernateDAO implements MemberDAOInterface {
 		return list;
 	}
 
-	@Override
-	public MemberVO findByMemberEmail(String memberEmail) {
-		MemberVO memberVO = null;
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		try {
-			session.beginTransaction();
-			Query query = session.createQuery("from MemberVO where memberEmail=?");
-			query.setParameter(0,memberEmail);
-			session.getTransaction().commit();
-		} catch (RuntimeException ex) {
-
-			session.getTransaction().rollback();
-			throw ex;
-		}
-		return memberVO;
-	}
-
 	public static void main(String[] args) {
-		/*MemberDAOInterface dao = new MemberHibernateDAO();
+		MemberDAOInterface dao = new MemberHibernateDAO();
 		// 新增(新增會員ok，新會員帳號)
 		MemberVO memberVO = new MemberVO(); 
 		memberVO.setMemberId("Alice");
@@ -175,26 +153,33 @@ public class MemberHibernateDAO implements MemberDAOInterface {
 				//測設連結MsgVO的值
 				System.out.println("通知明細");
 				for(MsgVO msgVO:data2.getMsgVOs()){
-				System.out.println(msgVO.getMemberVO()+"/"+msgVO.getStockNo()+" / "+msgVO.getMsgListVO().getListNo());
+				System.out.println(msgVO.getMember_id()+"/"+msgVO.getStock_no()+" / "+msgVO.getList_no());
 				}
 				System.out.println("追蹤清單");
 				for(TrackListingVO trackListingVO:data2.getTrackListingVOs()){
-					System.out.println(trackListingVO.getListingName()+trackListingVO.getMemberVO().getMemberId()+trackListingVO.getListingName());
+					System.out.println(trackListingVO.getListing_no()+trackListingVO.getMember_id()+trackListingVO.getListing_name());
 				}
 			}
 			System.out.println("帳號筆數無誤");
 		} else {
 			System.out.println("帳號筆數有誤");
-		}*/
-		MemberDAOInterface dao = new MemberHibernateDAO();
-		MemberVO membervo = dao.findByPrimaryKey("Charizard");
-		Set<TrackListingVO> list1 = membervo.getTrackListingVOs();
-		membervo.getMemberId();
-		for(TrackListingVO tl:list1){
-			Set<ListingDetailsVO> ldvo = tl.getLds();
-			for(ListingDetailsVO ld:ldvo){
-				System.out.println(ld.getStockVO());
-			}
 		}
+	}
+
+	@Override
+	public MemberVO findByMemberEmail(String memberEmail) {
+		MemberVO memberVO = null;
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("from MemberVO where memberEmail=?");
+			query.setParameter(0,memberEmail);
+			session.getTransaction().commit();
+		} catch (RuntimeException ex) {
+
+			session.getTransaction().rollback();
+			throw ex;
+		}
+		return memberVO;
 	}
 }
